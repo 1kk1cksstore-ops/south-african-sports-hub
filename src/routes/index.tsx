@@ -66,7 +66,6 @@ function time(iso: string | null): string {
 function Index() {
   const [offset, setOffset] = useState(0);
   const [sport, setSport] = useState("All");
-  const [onlyTv, setOnlyTv] = useState(false);
   const [region, setRegion] = useState<"All" | "ZA" | "UK">("All");
   const [limit, setLimit] = useState(60);
   const date = isoDay(offset);
@@ -81,11 +80,9 @@ function Index() {
   const matches = useMemo(() => {
     let list = data?.matches ?? [];
     if (sport !== "All") list = list.filter((m) => m.sport === sport);
-    if (onlyTv) list = list.filter((m) => m.channels.length > 0);
-    if (region !== "All")
-      list = list.filter((m) => m.channels.length === 0 || m.channels.some((c) => c.region === region));
+    if (region !== "All") list = list.filter((m) => m.channels.some((c) => c.region === region));
     return list;
-  }, [data, sport, onlyTv, region]);
+  }, [data, sport, region]);
 
   const onTv = useMemo(() => {
     let list = data?.onTv ?? [];
