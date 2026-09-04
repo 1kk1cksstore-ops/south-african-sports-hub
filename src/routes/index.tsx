@@ -170,17 +170,9 @@ function Index() {
                 </button>
               ))}
             </div>
-            <button
-              onClick={() => setOnlyTv((v) => !v)}
-              className={cn(
-                "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-                onlyTv
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground",
-              )}
-            >
-              On TV only
-            </button>
+            <span className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium">
+              TV matches only
+            </span>
           </div>
         </div>
       </div>
