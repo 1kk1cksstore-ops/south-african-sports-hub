@@ -29,7 +29,9 @@ export const getSportsDay = createServerFn({ method: "GET" })
         categories: l.categories.slice(0, 3),
       }));
 
-    const matches = await getMatchesForDay(data.date, listings);
+    const allMatches = await getMatchesForDay(data.date, listings);
+    // Only keep matches we could verify against the SA/UK EPG feeds.
+    const matches = allMatches.filter((m) => m.channels.length > 0);
 
     return { date: data.date, matches, onTv };
   });

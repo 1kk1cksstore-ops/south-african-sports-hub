@@ -66,7 +66,6 @@ function time(iso: string | null): string {
 function Index() {
   const [offset, setOffset] = useState(0);
   const [sport, setSport] = useState("All");
-  const [onlyTv, setOnlyTv] = useState(false);
   const [region, setRegion] = useState<"All" | "ZA" | "UK">("All");
   const [limit, setLimit] = useState(60);
   const date = isoDay(offset);
@@ -81,11 +80,9 @@ function Index() {
   const matches = useMemo(() => {
     let list = data?.matches ?? [];
     if (sport !== "All") list = list.filter((m) => m.sport === sport);
-    if (onlyTv) list = list.filter((m) => m.channels.length > 0);
-    if (region !== "All")
-      list = list.filter((m) => m.channels.length === 0 || m.channels.some((c) => c.region === region));
+    if (region !== "All") list = list.filter((m) => m.channels.some((c) => c.region === region));
     return list;
-  }, [data, sport, onlyTv, region]);
+  }, [data, sport, region]);
 
   const onTv = useMemo(() => {
     let list = data?.onTv ?? [];
@@ -170,17 +167,9 @@ function Index() {
                 </button>
               ))}
             </div>
-            <button
-              onClick={() => setOnlyTv((v) => !v)}
-              className={cn(
-                "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
-                onlyTv
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground",
-              )}
-            >
-              On TV only
-            </button>
+            <span className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium">
+              TV matches only
+            </span>
           </div>
         </div>
       </div>
@@ -201,7 +190,7 @@ function Index() {
 
           {!isPending && !isError && matches.length === 0 && (
             <p className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
-              Nothing listed for this day and filter.
+              No televised matches found for this day and filter.
             </p>
           )}
 
