@@ -67,6 +67,8 @@ function Index() {
   const [offset, setOffset] = useState(0);
   const [sport, setSport] = useState("All");
   const [onlyTv, setOnlyTv] = useState(false);
+  const [region, setRegion] = useState<"All" | "ZA" | "UK">("All");
+  const [limit, setLimit] = useState(60);
   const date = isoDay(offset);
   const fetchDay = useServerFn(getSportsDay);
 
@@ -80,16 +82,24 @@ function Index() {
     let list = data?.matches ?? [];
     if (sport !== "All") list = list.filter((m) => m.sport === sport);
     if (onlyTv) list = list.filter((m) => m.channels.length > 0);
+    if (region !== "All")
+      list = list.filter((m) => m.channels.length === 0 || m.channels.some((c) => c.region === region));
     return list;
-  }, [data, sport, onlyTv]);
+  }, [data, sport, onlyTv, region]);
 
   const onTv = useMemo(() => {
-    const list = data?.onTv ?? [];
-    if (sport === "All") return list;
-    return list.filter((l) =>
-      l.categories.some((c) => c.toLowerCase().includes(sport.toLowerCase().split(" ")[0]!)),
-    );
-  }, [data, sport]);
+    let list = data?.onTv ?? [];
+    if (region !== "All") list = list.filter((l) => l.region === region);
+    if (sport !== "All") {
+      const key = sport.toLowerCase().split(" ")[0]!;
+      list = list.filter(
+        (l) =>
+          l.categories.some((c) => c.toLowerCase().includes(key)) ||
+          l.title.toLowerCase().includes(key),
+      );
+    }
+    return list;
+  }, [data, sport, region]);
 
   const isPast = offset < 0;
 
@@ -146,10 +156,24 @@ function Index() {
                 {s}
               </button>
             ))}
+            <div className="ml-auto flex items-center gap-1 rounded-full border border-border p-0.5">
+              {(["All", "ZA", "UK"] as const).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRegion(r)}
+                  className={cn(
+                    "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
+                    region === r ? "bg-secondary text-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  {r === "ZA" ? "South Africa" : r === "UK" ? "UK" : "All"}
+                </button>
+              ))}
+            </div>
             <button
               onClick={() => setOnlyTv((v) => !v)}
               className={cn(
-                "ml-auto rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
                 onlyTv
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border text-muted-foreground hover:text-foreground",
@@ -245,7 +269,7 @@ function Index() {
           </p>
           {isPending && <SkeletonList rows={4} />}
           <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
-            {onTv.map((l, i) => (
+            {onTv.slice(0, limit).map((l, i) => (
               <li key={`${l.channel}-${l.start}-${i}`} className="flex gap-3 p-3">
                 <div className="w-14 shrink-0 text-center">
                   <span className="font-display text-lg tracking-wide text-gold">{time(l.start)}</span>
@@ -264,6 +288,14 @@ function Index() {
               </li>
             ))}
           </ul>
+          {onTv.length > limit && (
+            <button
+              onClick={() => setLimit((v) => v + 60)}
+              className="mx-auto mt-4 block rounded-full border border-primary/50 bg-primary/10 px-5 py-2 text-sm font-medium transition-colors hover:bg-primary/20"
+            >
+              Show more ({onTv.length - limit} left)
+            </button>
+          )}
         </section>
       </main>
     </div>
