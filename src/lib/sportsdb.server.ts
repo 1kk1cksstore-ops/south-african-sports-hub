@@ -228,11 +228,10 @@ export async function getMatchesForDay(date: string, listings: Listing[]): Promi
   };
 
   return withChannels
-    .filter((m) => rank(m) < 2)
     .sort((a, b) => {
       const r = rank(a) - rank(b);
       if (r !== 0) return r;
       return (a.kickoff ?? "").localeCompare(b.kickoff ?? "");
     })
-    .slice(0, 120);
+    .slice(0, 200);
 }
