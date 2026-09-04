@@ -190,7 +190,7 @@ function Index() {
 
           {!isPending && !isError && matches.length === 0 && (
             <p className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
-              Nothing listed for this day and filter.
+              No televised matches found for this day and filter.
             </p>
           )}
 
