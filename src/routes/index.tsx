@@ -31,13 +31,13 @@ const SPORT_TABS = [
   "All",
   "Soccer",
   "Rugby",
-  "Cricket",
   "Basketball",
-  "Motorsport",
-  "Tennis",
-  "Golf",
-  "Fighting",
   "American Football",
+  "Hockey",
+  "Baseball",
+  "Volleyball",
+  "Handball",
+  "Fighting",
 ];
 
 function isoDay(offset: number): string {

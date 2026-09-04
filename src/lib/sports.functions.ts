@@ -7,7 +7,7 @@ export const getSportsDay = createServerFn({ method: "GET" })
   })
   .handler(async ({ data }) => {
     const { getSportListings } = await import("./epg.server");
-    const { getMatchesForDay } = await import("./sportsdb.server");
+    const { getMatchesForDay } = await import("./apisports.server");
 
     const listings = await getSportListings();
     const dayStart = Date.parse(`${data.date}T00:00:00Z`) - 1000 * 60 * 60 * 3;
